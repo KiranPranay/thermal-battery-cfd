@@ -2,9 +2,21 @@
 
 Reproducible OpenFOAM v2412 model of a 13-stack LiSi/FeS₂ thermal battery with LiF-LiCl-LiBr molten-salt electrolyte, plus the extension to five ambient temperatures {−40, −20, 0, +26.85, +50} °C. The reference cell geometry follows Jeong, Cho and Lee (2019, *J. Power Sources* **424**:35–41), doi:[10.1016/j.jpowsour.2019.03.067](https://doi.org/10.1016/j.jpowsour.2019.03.067). This repository is the code, data, and configuration artifact accompanying the manuscript *"Low-temperature activation limits of a thermal battery and the energy cost of a published uniformity remedy"* (P. Pranay Kiran, submitted to *Journal of Power Sources*).
 
+## What is reproducible from this repository
+
+The paper reports twelve run configurations. All twelve are derived from the single reference YAML `configs/jeong_case1_discharge.yaml` by parameter override (ambient temperature, discharge Case, optional rescue-source cellSet, `writeInterval`, `endTime`). The exact override for each of the twelve is tabulated in `configs/PARAMETER_MATRIX.md`. Given this repository plus an OpenFOAM v2412 installation, a user can reproduce:
+
+- All five points of the operability envelope (§4 of the paper, Fig 4): `phase7a_t_neg40`, `_neg20`, `_0`, `_anchor_ctrl`, `_pos50`.
+- All three points of the Case 3-1 discharge derating (§5, Fig 5): `phase7b_c31_t_neg20`, `_t_0`, `case_3_1`.
+- Both rescue configurations (§6, Fig 7, Fig 8): `phase7c_rescue_depth_t_neg40` (discharge-OFF), `phase7c_depth_disch_t_neg40` (D2, discharge-ON).
+- Both fine-cadence validation runs (§3.1, Fig 2): `case1_fine_cadence` (WI = 0.05 s), `case1_ultrafine` (WI = 0.005 s).
+
+Not shipped as separate files: the Phase 6 six-case matrix (Cases 1/2/3/1-1/2-1/3-1 at +26.85 °C, cited in Table 1 for the Fig 5 comparison) — those runs differ from the reference only in the `discharge` field and are generated the same way. See `configs/PARAMETER_MATRIX.md` for the full recipe.
+
 ## What is in here
 
-- **`configs/`** — YAML sources for every OpenFOAM case (`jeong_case1_discharge.yaml` is the reference; sha `887587fe...`). Cases are generated from these YAMLs via `scripts/build_case.py`.
+- **`configs/jeong_case1_discharge.yaml`** — reference YAML for the +26.85 °C anchor case; sha `887587fe...`. Every other run configuration is a parameter override on this file.
+- **`configs/PARAMETER_MATRIX.md`** — the twelve-case parameter matrix and how to build any of them.
 - **`scripts/`** — case-build pipeline (`build_case.py`), OpenFOAM dictionary generators (`generate_blockMeshDict.py`, `generate_controlDict.py`, `generate_fvOptions.py`, `generate_initial_fields.py`, `generate_solver_settings.py`), extraction scripts (`extract_liquid_fraction.py`, `extract_phase2_timeseries.py`), and the config loader.
 - **`data/extractions/`** — the JSON extractions cited in the paper's figures and tables. Each file's provenance is in the header comment or the paper's Supplementary Information.
 - **`figures/generate_all.py`** — figure-generation code for the eight paper figures. Reads only files from `figures/data/` and `data/extractions/`. No solver run required.

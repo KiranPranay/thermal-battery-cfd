@@ -4,8 +4,8 @@ title: "Thermal-battery CFD: an OpenFOAM conjugate heat-transfer model of a 13-s
 type: software
 version: "0.4.0"
 date-released: "2026-08-05"
-url: "https://github.com/[USER TBD]/thermal-battery-cfd"
-repository-code: "https://github.com/[USER TBD]/thermal-battery-cfd"
+url: "https://github.com/kiranpranay/thermal-battery-cfd"
+repository-code: "https://github.com/kiranpranay/thermal-battery-cfd"
 license: Apache-2.0
 authors:
   - family-names: Kiran

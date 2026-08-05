@@ -69,11 +69,10 @@ case:
     air annulus, Fig 1 exact) run on the chtMultiRegionFoam multi-region
     T-continuous architecture.
 
-    Motivation: the true-2A single-region + pureZoneMixture pathway was
-    audited in [internal chapter reference stripped]
-    and found to enforce h-continuity at zone interfaces (physically
-    wrong when Cp jumps), producing a T ∝ 1/Cp pattern (anode 546 K,
-    electrolyte 717 K, collector 1042 K, all at h=514 kJ/kg to 0.09%).
+    Motivation: an earlier single-region + pureZoneMixture pathway was
+    found to enforce h-continuity at zone interfaces (physically wrong
+    when Cp jumps), producing a T ∝ 1/Cp pattern (anode 546 K, electrolyte
+    717 K, collector 1042 K, all at h=514 kJ/kg to 0.09%).
     chtMultiRegionFoam couples adjacent regions via T-continuity BCs
     (turbulentTemperatureRadCoupledMixed) — the physically correct
     constraint. Combining this architecture with the corrected geometry
