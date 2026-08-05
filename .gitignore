@@ -1,0 +1,32 @@
+# raw solver output (regenerable; ~100 GB per sweep)
+VTK/
+*.vtu
+*.vtm
+*.vtm.series
+postProcessing/
+processor*/
+constant/polyMesh/
+0.*/
+[1-9]*/
+
+# solver logs
+log.*
+*.log
+
+# python cache
+__pycache__/
+*.pyc
+
+# editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# derived / build artifacts
+*.egg-info/
+build/
+
+# do NOT redistribute copyrighted PDFs
+*.pdf
+!figures/*.pdf

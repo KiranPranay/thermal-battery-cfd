@@ -1,0 +1,27 @@
+The data files in this repository (all files under data/ and figures/data/, and
+any CSV or JSON extraction included alongside code) are licensed under the
+Creative Commons Attribution 4.0 International License (CC-BY-4.0).
+
+You are free to:
+  - Share — copy and redistribute the data in any medium or format
+  - Adapt — remix, transform, and build upon the data for any purpose,
+    even commercially.
+
+Under the following terms:
+  - Attribution — You must give appropriate credit, provide a link to the
+    license, and indicate if changes were made. You may do so in any
+    reasonable manner, but not in any way that suggests the licensor
+    endorses you or your use.
+
+Full license text: https://creativecommons.org/licenses/by/4.0/legalcode
+Human-readable summary: https://creativecommons.org/licenses/by/4.0/
+
+Suggested attribution:
+  Kiran, P. Pranay. "Thermal-battery CFD: an OpenFOAM conjugate heat-transfer
+  model of a 13-stack LiSi/FeS2 thermal battery." Zenodo, [DOI TBD].
+
+Copyright 2026 P. Pranay Kiran.
+
+Source code in this repository (files under scripts/, figures/, configs/, and
+Makefile / tooling) is separately licensed under the Apache License, Version 2.0.
+See LICENSE for the full text.

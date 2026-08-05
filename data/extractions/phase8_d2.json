@@ -1,0 +1,29 @@
+{
+  "D2_electrolyte": {
+    "case": "phase7c_depth_disch_t_neg40",
+    "n_snap": 351,
+    "t_end": 700.0,
+    "M_peak_Tmin": 726.2311401367188,
+    "t_M_peak": 434.0,
+    "alpha_LOWEST_peak": 0.8360372185707092,
+    "alpha_MEAN_max": 0.9870075382052971,
+    "T_min_end": 699.3071899414062,
+    "strict_cross_up_730p85": null,
+    "strict_cross_dn_730p85": null,
+    "melt_cross_up_716p15": 274.47245918904645,
+    "melt_cross_dn_716p15": 514.8743938890736
+  },
+  "D2_ledger": {
+    "total_dS": 9783.452689150481,
+    "per_region": {
+      "heatPellet": 2784.824184538912,
+      "cathode": 2062.619770431702,
+      "anode": 1120.6706669318387,
+      "collector": 513.8750281426209,
+      "electrolyte": 735.8595278126098,
+      "insulation_A": 1471.861051840531,
+      "insulation_B": 3.008636049911001,
+      "case_ss": 1090.7338234023557
+    }
+  }
+}

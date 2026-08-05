@@ -1,0 +1,113 @@
+{
+  "asymmetry_profile": {
+    "c0": {
+      "x_mm": 22.618,
+      "t_peak_late_s": 30.0,
+      "T_peak_late_K": 905.8580932617188
+    },
+    "c1": {
+      "x_mm": 27.963,
+      "t_peak_late_s": 92.0,
+      "T_peak_late_K": 848.5009765625
+    },
+    "c2": {
+      "x_mm": 33.307,
+      "t_peak_late_s": 148.0,
+      "T_peak_late_K": 826.7879638671875
+    },
+    "c3": {
+      "x_mm": 38.651,
+      "t_peak_late_s": 202.0,
+      "T_peak_late_K": 815.3969116210938
+    },
+    "c4": {
+      "x_mm": 43.996,
+      "t_peak_late_s": 260.0,
+      "T_peak_late_K": 808.8869018554688
+    },
+    "c5": {
+      "x_mm": 49.34,
+      "t_peak_late_s": 314.0,
+      "T_peak_late_K": 805.7960815429688
+    },
+    "c6": {
+      "x_mm": 54.684,
+      "t_peak_late_s": 330.0,
+      "T_peak_late_K": 804.6250610351562
+    },
+    "c7": {
+      "x_mm": 60.028,
+      "t_peak_late_s": 284.0,
+      "T_peak_late_K": 805.23828125
+    },
+    "c8": {
+      "x_mm": 65.372,
+      "t_peak_late_s": 214.0,
+      "T_peak_late_K": 808.875244140625
+    },
+    "c9": {
+      "x_mm": 70.717,
+      "t_peak_late_s": 168.0,
+      "T_peak_late_K": 815.9204711914062
+    },
+    "c10": {
+      "x_mm": 76.061,
+      "t_peak_late_s": 126.0,
+      "T_peak_late_K": 827.2469482421875
+    },
+    "c11": {
+      "x_mm": 81.405,
+      "t_peak_late_s": 80.0,
+      "T_peak_late_K": 848.0230712890625
+    },
+    "c12": {
+      "x_mm": 86.749,
+      "t_peak_late_s": 26.0,
+      "T_peak_late_K": 904.8245239257812
+    }
+  },
+  "asymmetry_pairs": [
+    {
+      "top": "c0",
+      "bottom": "c12",
+      "t_top": 30.0,
+      "t_bottom": 26.0,
+      "dt": -4.0
+    },
+    {
+      "top": "c1",
+      "bottom": "c11",
+      "t_top": 92.0,
+      "t_bottom": 80.0,
+      "dt": -12.0
+    },
+    {
+      "top": "c2",
+      "bottom": "c10",
+      "t_top": 148.0,
+      "t_bottom": 126.0,
+      "dt": -22.0
+    },
+    {
+      "top": "c3",
+      "bottom": "c9",
+      "t_top": 202.0,
+      "t_bottom": 168.0,
+      "dt": -34.0
+    },
+    {
+      "top": "c4",
+      "bottom": "c8",
+      "t_top": 260.0,
+      "t_bottom": 214.0,
+      "dt": -46.0
+    },
+    {
+      "top": "c5",
+      "bottom": "c7",
+      "t_top": 314.0,
+      "t_bottom": 284.0,
+      "dt": -30.0
+    }
+  ]
+}

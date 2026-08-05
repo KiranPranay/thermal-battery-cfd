@@ -1,0 +1,25 @@
+{
+  "case": "case1_ultrafine",
+  "writeInterval_s": 0.005,
+  "endTime_s": 1.0,
+  "at_t_0p42": {
+    "HP_LOWx_mean_K": 1280.1917724609375,
+    "HP_LOWx_max_K": 1287.7352294921875,
+    "electrolyte_c6_mean_K": 428.4206237792969,
+    "gap_K": 851.7711486816406
+  },
+  "HP_LOWx_mean_peak": {
+    "T_K": 1280.1917724609375,
+    "t_s": 0.42
+  },
+  "HP_LOWx_max_peak": {
+    "T_K": 1287.7352294921875,
+    "t_s": 0.42
+  },
+  "domain_HP_max_at_042": 1753.9599609375,
+  "domain_HP_max_peak": {
+    "T_K": 1753.9599609375,
+    "t_s": 0.42
+  },
+  "burn_end_s": 0.421
+}

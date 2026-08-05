@@ -1,0 +1,51 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+title: "Thermal-battery CFD: an OpenFOAM conjugate heat-transfer model of a 13-stack LiSi/FeS2 thermal battery"
+type: software
+version: "0.4.0"
+date-released: "2026-08-05"
+url: "https://github.com/[USER TBD]/thermal-battery-cfd"
+repository-code: "https://github.com/[USER TBD]/thermal-battery-cfd"
+license: Apache-2.0
+authors:
+  - family-names: Kiran
+    given-names: "P. Pranay"
+    orcid: "[ORCID TBD]"
+    email: "[EMAIL TBD]"
+    affiliation: "[AFFILIATION TBD]"
+keywords:
+  - openfoam
+  - cfd
+  - thermal-battery
+  - conjugate-heat-transfer
+  - phase-change
+  - molten-salt
+  - pyrotechnics
+  - energy-storage
+  - reproducible-research
+abstract: >-
+  OpenFOAM v2412 chtMultiRegionFoam axisymmetric conjugate heat-transfer model of
+  a 13-stack LiSi/FeS2 thermal battery with LiF-LiCl-LiBr molten-salt electrolyte.
+  Reproduces Jeong, Cho and Lee (2019, J. Power Sources 424:35-41) at +26.85 C
+  and extends the model to five ambient temperatures from -40 to +50 C for
+  operability envelope, discharge derating, and cold-ambient rescue-pellet
+  energy-split accounting. Includes YAML case configurations, build and
+  extraction scripts, per-region extractions cited in the associated
+  publication, and figure-generation code.
+preferred-citation:
+  type: article
+  title: "Low-temperature activation limits of a thermal battery and the energy cost of a published uniformity remedy"
+  authors:
+    - family-names: Kiran
+      given-names: "P. Pranay"
+      orcid: "[ORCID TBD]"
+  journal: "Journal of Power Sources"
+  year: 2026
+  doi: "[DOI TBD upon acceptance]"
+  notes: >-
+    Manuscript in preparation for submission; publication metadata to be
+    completed at acceptance.
+identifiers:
+  - description: "Concept DOI for all versions of this software (Zenodo)"
+    type: doi
+    value: "[DOI TBD]"

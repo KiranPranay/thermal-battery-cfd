@@ -1,0 +1,454 @@
+# ============================================================================
+# Thermal Battery — TRUE-2A Jeong 2019 replication (Phase 5)
+# ============================================================================
+# Sibling of jeong_faithful.yaml. IDENTICAL physics, geometry, materials,
+# heat source, and boundary conditions. The ONLY change is the solver
+# topology:
+#
+#   jeong_faithful.yaml : chtMultiRegionFoam, 9 sub-meshes coupled by
+#                         turbulentTemperatureRadCoupledMixed on every
+#                         axial patch pair (5 pairs per unit_cell × 13
+#                         cells + end regions + air gaps + caps + case).
+#
+#   jeong_true2A.yaml   : solidFoam, ONE conforming mesh with cellZones
+#                         per material (9 zones), pureZoneMixture,
+#                         heSolidThermo<pureZoneMixture,
+#                                        tabulatedSolidTransport,
+#                                        hTabulatedThermo,
+#                                        icoPolynomial>.
+#
+# WHY this case exists (test hypothesis):
+#   Stage 3e (chtMultiRegionFoam, ε=0.11, k_liquid=0.5, Δt_write=1e-4)
+#   reproduced Jeong's Point 1 (edge cell, activates at 0.6 s) and Point 7
+#   (bottom edge, ~1.1 s) within tolerance, but Point 4 (center cell) failed
+#   to reach 510 °C and stalled at ~460 °C, and the pellet peak fell short.
+#   The residual deficit correlates with axial position: worst at the center,
+#   fine at the edges. The dominant candidate throttle NOT yet eliminated
+#   is the CONJUGATE-BC TOPOLOGY itself — turbulentTemperatureRadCoupledMixed
+#   iterates between region pairs and is only flux-consistent to solver
+#   tolerance, not FVM-conservative by construction.
+#
+#   A 2-material bar smoke test (k=1 | k=10, one shared mesh with two
+#   cellZones + pureZoneMixture) showed boundary flux matches to 0.14 %;
+#   the residual 1.3 % arithmetic-vs-harmonic face interpolation error
+#   scales with the conductivity RATIO — which is 21× at the
+#   collector↔heatPellet rail. Hence Requirement 1 (harmonic corrected
+#   laplacian + explicit harmonic interpolate of alpha and kappa) is
+#   MANDATORY at the build-script stage.
+#
+# WHAT THIS CASE VALIDATES (pass criterion, from the brief):
+#   - Point 4 = center cell = ~510 °C at 3.42 s, still climbing at 200 s.
+#   - Points 1 and 7 must remain within tolerance (edges already worked).
+#   - Total pellet enthalpy released ≈ q_vol · V_pellet · 0.42 s (check
+#     Req 2 conservation).
+#
+# WHAT THIS CASE IS NOT:
+#   - Not a source-smearing test. Pyro is 9.7957e9 W/m³ in the 0.9 mm HP
+#     zones, simultaneous 0.42 s clock, as Jeong prescribes.
+#   - Not a BC change. h=10, T_amb=300, ε=0.11 (polished SS304) unchanged.
+#   - Not a geometry rewrite. 119.1 mm SHARED envelope, 8.5 mm top air
+#     gap, 4 mm bottom air gap, mirrored end regions, mica caps, case_ss
+#     all IDENTICAL to jeong_faithful.yaml.
+#   - Not a discharge study. Stage 3 activation only; joule/chemical OFF.
+#
+# CARRIED FIDELITY FIXES (already present in jeong2019.yaml Stage 3c):
+#   - electrolyte.phase_change.k_liquid_W_per_m_K: 0.5  (k-step across
+#     the 711.15 – 721.15 K melt buffer; solid 1.02 → liquid 0.5).
+#
+# See project documentation and the
+# Understand-phase context bundle for the full audit trail.
+# ============================================================================
+
+# Solver selector — read by build_case.py to pick solidFoam over
+# chtMultiRegionFoam. Distinguishes this case from every other config.
+
+case:
+  name: "jeong_multiregion_corrected"
+  description: |
+    Phase 5 SYNTHESIS run: corrected geometry (dedicated cells + radial
+    air annulus, Fig 1 exact) run on the chtMultiRegionFoam multi-region
+    T-continuous architecture.
+
+    Motivation: the true-2A single-region + pureZoneMixture pathway was
+    audited in [internal chapter reference stripped]
+    and found to enforce h-continuity at zone interfaces (physically
+    wrong when Cp jumps), producing a T ∝ 1/Cp pattern (anode 546 K,
+    electrolyte 717 K, collector 1042 K, all at h=514 kJ/kg to 0.09%).
+    chtMultiRegionFoam couples adjacent regions via T-continuity BCs
+    (turbulentTemperatureRadCoupledMixed) — the physically correct
+    constraint. Combining this architecture with the corrected geometry
+    (which none of the multi-region runs have seen) is the synthesis.
+
+    Geometry (same as jeong_true2A_geomcorr):
+      Axial 119.1 mm EXACT: case 4 / micaA 13 / end_bot 8.1 /
+        13 x 5.3 mm dedicated cells / end_top 8.1 / micaA 13 / case 4
+      Radial 55.0 mm EXACT: stack 41.0 / air 8.5 / insB 4.0 / case 1.5
+    Physics: k-step 1.02 -> 0.5 on electrolyte solid->liquid;
+             hTabulated apparent-Cp (buffer 711.15-721.15 K, latent 266 kJ/kg);
+             eps=0.11 conv+rad; concentrated pyro 9.7957e9 W/m^3 x 0.42 s.
+
+    Pre-registered bands (locked in the case brief):
+      1. cell-6 axis electrolyte at t=9-20 s: 800-830 K
+      2. activation (alpha>0.99 anywhere) at 2.5-5 s
+      3. outer-wall electrolyte at t=60 s > 716 K holding
+      4. global melt fraction -> ~100%
+      5. cells 0/12 peak 890-930 K near t=35-40 s
+      6. NEW: component T-ordering at t=2-5 s: coll > anode > elec > cath
+      7. NEW: unit-cell components within ~1 K of each other by t~9-12 s at ~813 K
+
+    Gates: G1 closure sums 119.1 / 55.0 exact + checkMesh OK; G2 energy
+    ledger closes within ~2% at t=1, 20, 60 s.
+
+    (Legacy fields below describe the sibling SHARED variant and are retained
+    for provenance — this case does NOT use them.)
+
+    Phase 5 TRUE-2A single-region monolithic replication of Jeong 2019.
+    IDENTICAL geometry (119.1 mm SHARED envelope, real 8.5 mm axial air
+    gap, mirrored end regions, polished SS304 ε=0.11), materials, pyro
+    source, and boundary conditions as jeong_faithful.yaml. ONLY change:
+    ONE conforming mesh with cellZones per material driven by
+    solidFoam + heSolidThermo<pureZoneMixture, tabulatedSolidTransport,
+    hTabulatedThermo, icoPolynomial>. Purpose: isolate the
+    chtMultiRegionFoam conjugate-BC topology
+    (turbulentTemperatureRadCoupledMixed on 5 axial patch pairs per
+    unit_cell) as the throttle on Point 4 (center cell) activation.
+    FVM-conservative flux at zone boundaries by construction (no
+    coupling BC); harmonic-corrected face interpolation is mandatory
+    (see Requirement 1 in the case brief).
+  data_source: "literature"
+  reference: "Jeong et al. 2019, doi:10.1016/j.jpowsour.2019.03.143"
+  notes: |
+    This case's build-script contract (per Requirement 1 in the brief):
+      - system/fvSchemes: laplacian(alpha,h) Gauss harmonic corrected
+      - system/fvSchemes.interpolationSchemes:
+          default linear;
+          interpolate(alpha) harmonic;
+          interpolate(kappa) harmonic;
+      - Sanity: harmonic face value at collector↔heatPellet is
+          2 · 1.02 · 21.65 / (1.02 + 21.65) = 1.948 W/m·K.
+      - constant/thermophysicalProperties: pureZoneMixture with one
+        sub-dict per cellZone (heatPellet, cathode, electrolyte, anode,
+        collector, insulation_A, insulation_B, case_ss, air) PLUS a
+        reserved `none` entry for any unzoned cells.
+      - constant/fvOptions: scalarSemiImplicitSource on `h`, but with
+        selectionMode cellZone; cellZone heatPellet;
+        (NOT `selectionMode all`, which is only correct after
+        splitMeshRegions). Pyro table unchanged: (0 0), (0.001 q_max),
+        (0.420 q_max), (0.421 0), (60 0).
+      - No splitMeshRegions. Pipeline is:
+          blockMesh -> topoSet -> solidFoam
+        The single blockMesh + topoSet cellZones are directly consumed
+        by pureZoneMixture; no baffle interface required.
+
+    This case's post-run contract (per Requirement 2 in the brief):
+      - controlDict.functionObjects must emit, per write step:
+          (a) volume-integrated h over the electrolyte cellZone
+              (volFieldValue, sum, weighted by cell volume);
+          (b) volume-integrated liquid-fraction proxy computed as
+              clamp((T - 711.15)/10, 0, 1) over the electrolyte cellZone
+              (coded functionObject).
+      - hTabulated Cp(T) table for the electrolyte encodes the latent
+        jump across the 711.15 – 721.15 K buffer such that
+          integral of Cp from 711.15 to 721.15 = 10·Cp_solid + Hf
+                                               = 10·870 + 266000
+                                               = 274700 J/kg.
+        The 6-point Cp anchor scheme (Cp_peak = Cp_baseline + Hf/window
+        with window = 10 K, ramps ±0.1 K) already satisfies this by
+        construction. Post-run script asserts
+          h(721.15) − h(711.15) ≈ 274700 J/kg
+        by numerical integration of the tabulated Cp.
+
+# ============================================================================
+# MATERIALS (unchanged from jeong_faithful.yaml; the ONLY delta is
+# electrolyte.phase_change.k_liquid_W_per_m_K, carried from Stage 3c)
+# ============================================================================
+materials:
+  heatPellet:
+    chemistry: "Fe/KClO4"
+    rho_kg_per_m3: 3299.28
+    cp_J_per_kg_K: 745.3
+    k_W_per_m_K: 21.860
+    description: "Pyrotechnic heat source"
+    phase_change: null
+
+  cathode:
+    chemistry: "FeS2-MgO"
+    rho_kg_per_m3: 2783.00
+    cp_J_per_kg_K: 992.3
+    k_W_per_m_K: 1.020
+    thermal_limit_K: 823.0
+    description: "Active cathode material"
+    phase_change: null
+
+  electrolyte:
+    chemistry: "LiF-LiBr-LiCl ternary"
+    rho_kg_per_m3: 2210.47
+    cp_J_per_kg_K: 870.0
+    k_W_per_m_K: 1.020
+    description: "Molten salt ionic conductor when activated"
+    phase_change:
+      enabled: true
+      T_melt_K: 716.15
+      latent_heat_J_per_kg: 266000
+      # Phase 6 Track 1 fix: certified §3.7.2 buffer is 30 K triangular
+      # (dCp/dT ~= 1,182 K^-1 data-bounded safe). The old 10 K trapezoidal
+      # default crashes Newton at t ~= 0.51 s per §3.5.3 F4 row 1.
+      shape: triangular
+      window_K: 30.0
+      # k-step lives on a NARROWER Jeong-Table-1 10 K window centred on
+      # T_melt (§3.3 window-mismatch note). This is intentional: the Cp
+      # buffer needs to be wide for Newton stability, but Jeong's kappa
+      # step is 10 K wide by Table 1; certified case1 keeps that width.
+      k_window_K: 10.0
+      k_liquid_W_per_m_K: 0.5
+
+  anode:
+    chemistry: "LiSi alloy"
+    rho_kg_per_m3: 1050.04
+    cp_J_per_kg_K: 2072.5
+    k_W_per_m_K: 5.440
+    description: "Active anode material"
+    phase_change: null
+
+  collector:
+    chemistry: "Ni"
+    rho_kg_per_m3: 7937.08
+    cp_J_per_kg_K: 690.8
+    k_W_per_m_K: 21.650
+    description: "Inter-cell electrical connector"
+    phase_change: null
+
+  insulator_A_mica:
+    chemistry: "mica (Muscovite)"
+    rho_kg_per_m3: 2263.54
+    cp_J_per_kg_K: 850.0
+    k_W_per_m_K: 0.400
+    description: "Electrical insulator and structural support (Jeong Insulator A)"
+    role: "insulator_A"
+    phase_change: null
+
+  insulator_B_ceramic:
+    chemistry: "ceramic material (Jeong's baseline)"
+    rho_kg_per_m3: 205.7
+    cp_J_per_kg_K: 979.7
+    k_W_per_m_K: 0.080
+    description: "Ceramic thermal insulator (Jeong Insulator B baseline)"
+    role: "insulator_B"
+    phase_change: null
+
+  case_ss:
+    chemistry: "SS304"
+    rho_kg_per_m3: 8030.00
+    cp_J_per_kg_K: 690.8
+    k_W_per_m_K: 21.646
+    description: "Stainless steel battery case"
+    phase_change: null
+
+  # Jeong Table 1. Conduction-only (no buoyancy / convection in the gap).
+  # Jeong's Fluent setup makes the same assumption (gaps are thin enough
+  # that natural convection is sub-dominant).
+  air:
+    chemistry: "air"
+    rho_kg_per_m3: 1.225
+    cp_J_per_kg_K: 1006.4
+    k_W_per_m_K: 0.024
+    description: "Air (Jeong Table 1) — conduction-only stand-in for gas gap"
+    phase_change: null
+
+primary_insulator_B_material: insulator_B_ceramic
+
+# ============================================================================
+# ASSEMBLY — SHARED 119.1 mm geometry, identical to jeong_faithful.yaml
+# ============================================================================
+assembly:
+  # FALSE — corrected geometry moves the 8.5 mm air gap to the RADIAL annulus
+  # (interpreted from Fig 1a as the tolerance ring around the internal stack).
+  # The 4 mm bottom "air" was likewise a projection artifact — absent here.
+  use_real_air_gaps: false
+
+  blocks:
+    # Electroactive cell — DEDICATED-pellet variant (Phase 5 energy-hypothesis test).
+    # Each unit cell contains TWO 0.9 mm HP layers (one at each end) instead of one.
+    # HP-per-cell = 1.8 mm (was 0.9 in SHARED); pitch = 5.3 mm (was 4.4).
+    # HP fraction per cell = 1.8/5.3 = 34% (was 20.5%); matches Jeong Fig 2's
+    # 813 K equilibrium energy budget. Not shared between cells — adjacent cells
+    # stack two HPs at the boundary (physically = 1.8 mm HP slab; modelled as
+    # separate but co-firing zones with identical properties).
+    unit_cell:
+      description: "Electroactive cell (DEDICATED). Order: HP / cathode / electrolyte / anode / collector / HP. 2 HPs per cell, 5.3 mm pitch."
+      layers:
+        - {material: "heatPellet",  thickness_mm: 0.9}
+        - {material: "cathode",     thickness_mm: 1.6}
+        - {material: "electrolyte", thickness_mm: 0.6}
+        - {material: "anode",       thickness_mm: 1.1}
+        - {material: "collector",   thickness_mm: 0.2}
+        - {material: "heatPellet",  thickness_mm: 0.9}
+
+    # Top stack region (Fig 1b), inner->outer (cells-side to cap-side):
+    #   HP 1.8 / mica 1.8 / HP 1.8 / mica 1.8 / HP 0.9
+    # Thin 0.9 pellet at the OUTER end (cap-side). Per-region totals:
+    # 3 HP layers = 4.5 mm; 2 mica layers = 3.6 mm; total = 8.1 mm.
+    #
+    # Top block sits ABOVE the 8.5 mm air gap, so "inner" = block's
+    # BOTTOM (toward cells below). YAML reads bottom-to-top, so YAML
+    # order = inner->outer = matches the user spec verbatim.
+    end_region_top:
+      description: "Top stack region (Fig 1b). YAML reads bottom-to-top = cells-side to cap-side. Fig 1b top-to-bottom: HP 1.8 (top, cap) / InsA 1.8 / HP 1.8 / InsA 1.8 / HP 0.9 (bottom, cells). So YAML reverses to: HP 0.9 (cells) / InsA 1.8 / HP 1.8 / InsA 1.8 / HP 1.8 (cap). Thin pellet at cells-side, MIRROR-SYMMETRIC with end_region_bottom (Fig 1b/1d verified)."
+      layers:
+        - {material: "heatPellet",       thickness_mm: 0.9}   # inner (cells-side per Fig 1b) — THIN PELLET
+        - {material: "insulator_A_mica", thickness_mm: 1.8}
+        - {material: "heatPellet",       thickness_mm: 1.8}
+        - {material: "insulator_A_mica", thickness_mm: 1.8}
+        - {material: "heatPellet",       thickness_mm: 1.8}   # outer (cap-side per Fig 1b)
+
+    # Bottom stack region (Fig 1d), inner->outer (cells-side to cap-side):
+    #   HP 0.9 / mica 1.8 / HP 1.8 / mica 1.8 / HP 1.8
+    # Thin 0.9 pellet at the INNER end (cells-side) — GENUINE MIRROR of top.
+    #
+    # Bottom block sits BELOW the 4 mm air gap, so "inner" = block's TOP
+    # (toward cells above). YAML reads bottom-to-top, so YAML order =
+    # REVERSE of user's inner->outer spec = HP1.8/mica1.8/HP1.8/mica1.8/HP0.9.
+    # Identical YAML composition to end_region_top; the spatial mirror
+    # emerges from the block's position in the axial sequence (thin
+    # pellet ends up at TOP of bottom block = inner = cells-side).
+    end_region_bottom:
+      description: "Bottom stack region (Fig 1d). 3 HP slabs (1.8/1.8/0.9 mm) + 2 mica bands (1.8/1.8 mm), mirrored vs top in space. Thin pellet at cells-side."
+      layers:
+        - {material: "heatPellet",       thickness_mm: 1.8}   # outer (toward bottom mica cap below)
+        - {material: "insulator_A_mica", thickness_mm: 1.8}
+        - {material: "heatPellet",       thickness_mm: 1.8}
+        - {material: "insulator_A_mica", thickness_mm: 1.8}
+        - {material: "heatPellet",       thickness_mm: 0.9}   # inner (toward cells / 4 mm air gap above) — THIN PELLET
+
+  # Axial sequence: bottom to top. Total = 119.1 mm EXACT.
+  # NO axial air gaps — Fig 1a's 4 mm and 8.5 mm are the RADIAL air annulus
+  # projected on the axial cross-section, not physical axial gaps.
+  # 4 + 13 + 8.1 + (13 x 5.3 = 68.9) + 8.1 + 13 + 4 = 119.1 mm.
+  axial_sequence:
+    - {material: "case_ss",            thickness_mm:  4.0}   # bottom case (was 3.2 to compensate for axial air gap; now 4 to close 119.1)
+    - {material: "insulator_A_mica",   thickness_mm: 13.0}   # bottom Insulator A cap
+    - {block: "end_region_bottom"}                            # 8.1 mm bottom stack (mirrored)
+    - {block: "unit_cell", repeat: 13}                        # 68.9 mm dedicated electro-active (13 x 5.3)
+    - {block: "end_region_top"}                               # 8.1 mm top stack
+    - {material: "insulator_A_mica",   thickness_mm: 13.0}   # top Insulator A cap
+    - {material: "case_ss",            thickness_mm:  4.0}   # top case
+
+  # Radial: 55.0 mm EXACT. Stack radius = 41 mm (per Fig 1's Point 4
+  # location at r=41 mm). Air is ONE radial annulus (8.5 mm) between
+  # stack and Insulator B. Conduction-only solid (Table 1 air properties,
+  # k=0.024). Insulator B = 4 mm; case = 1.5 mm.
+  #   stack_internal 41.0 + air 8.5 + insulator_B 4.0 + case_ss 1.5 = 55.0 mm
+  radial_sequence:
+    - {material: "stack_internal",     thickness_mm: 41.0}
+    - {material: "air",                thickness_mm:  8.5}   # radial air annulus (Fig 1a)
+    - {material: "insulator_B",        thickness_mm:  4.0}
+    - {material: "case_ss",            thickness_mm:  1.5}
+
+# ============================================================================
+# MESH — inherited cell sizing (validated on 108.4 mm baseline)
+# ============================================================================
+# Same 0.067 mm stack / 0.5 mm outside / 0.5 mm radial as
+# jeong_faithful.yaml. No mesh-independence re-study required — the
+# only physics change here is the solver topology, not the discretization.
+mesh:
+  axial_cell_size_stack_mm: 0.067
+  axial_cell_size_outside_mm: 0.5
+  radial_cell_size_mm: 0.5
+  wedge_angle_deg: 2.5
+
+# ============================================================================
+# HEAT SOURCES — Stage 3 (activation only). Discharge disabled for Stage 3.
+# ============================================================================
+# Concentrated pyro source (NOT smeared) in the 0.9 mm HP zones, simultaneous
+# 0.42 s clock. tableFile clamps outside range, so q=0 for t > 60 s.
+# Build script attaches this via scalarSemiImplicitSource with
+# `selectionMode cellZone; cellZone heatPellet;` (see case.notes above).
+heat_sources:
+  pyrotechnic:
+    enabled: true
+    target_material: "heatPellet"
+    q_volumetric_W_per_m3: 9.7957e+9
+    time_profile:
+      - [0.000, 0.0]
+      - [0.001, 1.0]
+      - [0.420, 1.0]
+      - [0.421, 0.0]
+      - [60.0,  0.0]
+
+  joule_heating:
+    enabled: true                               # Case 1 discharge ON
+    target_material: "cathode"
+    activation_after_s: 3.0                     # gate at measured activation (Jeong methodology)
+    current_density_A_per_cm2: 0.5              # Case 1 (Jeong Table 2)
+    cathode_resistance_ohm_m: 1.8e-4
+
+  chemical_reaction:
+    enabled: true                               # Case 1 discharge ON
+    target_materials: ["cathode", "anode"]
+    activation_after_s: 3.0                     # gate at measured activation
+    dU0_dT_V_per_K: 2.0e-4                      # Case 1 (positive -> endothermic per Jeong Table 2)
+
+# ============================================================================
+# BOUNDARY CONDITIONS — Jeong's exact (verbatim from jeong_faithful.yaml)
+# ============================================================================
+# For solidFoam these map to the OUTER mesh patches; the config is unchanged
+# but the build script handles patch naming (the single-region mesh already
+# emits outerCase/bottom/top as the natural blockMesh patches — no
+# per-region rename required).
+boundary_conditions:
+  external_heat_loss:
+    type: "convection_radiation"
+    h_W_per_m2_K: 10.0
+    T_ambient_K: 300.0
+    emissivity: 0.11
+    applied_to_patches: ["outerCase", "bottom", "top"]
+
+  initial_temperature_K: 300.0
+
+# ============================================================================
+# RUN CONTROLS — Jeong Point 4 peak window (200 s)
+# ============================================================================
+# Point 4 (center cell) is the pass criterion. Jeong Fig 3b shows the
+# center cell still climbing at 200 s (post-activation phase). This is a
+# LONGER run than jeong_faithful.yaml (20 s Stage 3 activation) because
+# the true-2A test is specifically about whether the coupling-BC removal
+# lets Point 4 track Jeong's timeline through peak, not just through
+# activation onset.
+run_controls:
+  # Case 1 discharge: 600 s to capture Jeong Fig 3a Point 4 peak at ~200 s
+  # AND Fig 5 end-state at 600 s. Write every 2 s -> 301 time dirs.
+  endTime_s: 600.0
+  deltaT_initial_s: 1.0e-5
+  write_interval_s: 2.0
+  adaptive_timestep: true
+  # maxDi relaxed from 2.0 to 50 based on true-2A round 1 diagnosis
+  # (air-gap wedge-axis cells set the clamp; solidFoam is fully implicit
+  # so accuracy-safe under maxDi=50).
+  maxCo: 0.5
+  maxDi: 50
+  maxDeltaT_s: 0.02
+
+# ============================================================================
+# VALIDATION TARGETS — Jeong's published Fig 2 / Fig 3b numbers
+# ============================================================================
+# Pass criterion (from the brief):
+#   Point 4 = center cell = ~510 °C at 3.42 s, still climbing at 200 s.
+#   Points 1 and 7 must stay within tolerance (edges already worked at
+#   Stage 3e; regression check only).
+validation:
+  data_type: "literature"
+
+  reference_quantities:
+    heatPellet_peak_T_K: 1320.0           # Jeong: ~1047 °C / 1320 K at t≈0.42 s
+    heatPellet_peak_time_s: 0.42
+    activation_time_s: 3.42                # Jeong Point 4: center cell at 3.42 s
+    cathode_peak_T_K: 813.15
+    final_stack_temperature_K: 798.15
+
+  probes: []
+
+  tolerances:
+    heatPellet_peak_T_K: 200               # within ~20 % of Jeong's value (sign gate)
+    activation_time_pct: 25
+    final_stack_T_K: 50
+    cathode_peak_T_K: 100

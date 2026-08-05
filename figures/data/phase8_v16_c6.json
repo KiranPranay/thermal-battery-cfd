@@ -1,0 +1,94 @@
+{
+  "source": "case1_fine_cadence, writeInterval 0.05s, extracted 2026-08-05",
+  "purpose": "v1.6 BLOCKING re-extraction: HP cathode-adjacent + electrolyte in cell 6 at t=0.42s (Jeong Fig 2 measurement location)",
+  "unit_cell_c6": {
+    "center_x_mm": 54.684,
+    "span_mm": [52.034, 57.334],
+    "layers_bottom_to_top": {
+      "LOW_x_HP_cathode_side": {"x_range_mm": [52.034, 52.934], "thickness_mm": 0.9},
+      "cathode": {"x_range_mm": [52.934, 54.534], "thickness_mm": 1.6, "k_W_per_mK": 1.02},
+      "electrolyte": {"x_range_mm": [54.534, 55.134], "thickness_mm": 0.6, "k_W_per_mK": 1.02},
+      "anode": {"x_range_mm": [55.134, 56.234], "thickness_mm": 1.1, "k_W_per_mK": 5.44},
+      "collector": {"x_range_mm": [56.234, 56.434], "thickness_mm": 0.2, "k_W_per_mK": 21.65},
+      "HIGH_x_HP_collector_side": {"x_range_mm": [56.434, 57.334], "thickness_mm": 0.9}
+    }
+  },
+  "measurements_at_t_0p42s": {
+    "actual_snapshot_time_s": 0.400,
+    "cell_6_HP_cathode_adjacent_LOW_x": {
+      "region": "heatPellet",
+      "x_range_mm": [52.034, 52.934],
+      "n_cells": 984,
+      "T_mean_K": 1245.43,
+      "T_max_K": 1252.94,
+      "adiabatic_fraction": 0.63,
+      "jeong_reference_K": 1320,
+      "delta_K": -74.6,
+      "verdict": "PASS"
+    },
+    "cell_6_HP_collector_adjacent_HIGH_x": {
+      "region": "heatPellet",
+      "x_range_mm": [56.434, 57.334],
+      "n_cells": 1148,
+      "T_mean_K": 1182.85,
+      "T_max_K": 1243.62,
+      "note": "sheds more via fast collector/anode path, as predicted"
+    },
+    "cell_6_electrolyte_full": {
+      "region": "electrolyte",
+      "x_range_mm": [54.534, 55.134],
+      "n_cells": 574,
+      "T_mean_K": 415.67,
+      "T_max_K": 510.51,
+      "T_min_K_approx": 320.83,
+      "jeong_reference_K": 420,
+      "delta_K": -4.3
+    },
+    "cell_6_electrolyte_cathode_side_face": {
+      "x_range_mm": [54.534, 54.734],
+      "n_cells": 246,
+      "T_mean_K": 364.31,
+      "T_max_K": 382.29,
+      "note": "near-initial (300 K), penetration blocked by 0.39 mm through 1.6 mm cathode"
+    },
+    "cell_6_electrolyte_anode_side_face_at_t0p5": {
+      "t_snapshot_s": 0.500,
+      "x_range_mm": [54.934, 55.134],
+      "n_cells": 82,
+      "T_mean_K": 616.14,
+      "T_max_K": 616.15,
+      "note": "at t=0.5s (post-burn); auditing info only; NOT quoted in the fidelity table"
+    },
+    "cell_6_electrolyte_anode_side_face_at_t0p4": {
+      "t_snapshot_s": 0.400,
+      "x_range_mm": [54.934, 55.134],
+      "n_cells": 82,
+      "T_mean_K": 510.46,
+      "T_max_K": 510.51,
+      "note": "at t=0.4s (nearest snapshot to 0.42 in the WI=0.05 case1_fine_cadence run); THIS is the value the v1.6 fidelity table quotes (510 K anode-side)"
+    },
+    "which_value_is_used_in_prose": "The v1.6 fidelity table + face-resolved paragraph quotes 510.46 K (t=0.4s). The 616.14 K at t=0.5s is auditing/historical only. v1.7 supersedes both via direct measurement at t=0.420 from case1_ultrafine (WI=0.005); see phase8_v17_ultrafine.json for canonical v1.7 values.",
+    "mesh_grading_note": "The c6 electrolyte cells span x=[54.5835, 54.9856] mm (7 axial rows @ ~0.067 mm spacing, 82 radial cells per row = 574 total). My cathode-side/middle/anode-side thirds of [54.534, 55.134] captured 246/246/82 cells respectively because the axial rows fall unevenly into equal-width thirds. Not a bug; documented mesh-grading artifact.",
+    "HP_electrolyte_gap_cell_6_basis": {
+      "HP_mean_K": 1245.43,
+      "electrolyte_mean_K": 415.67,
+      "gap_K": 829.76,
+      "jeong_reference_K": 900,
+      "delta_K": -70.24,
+      "verdict": "PASS"
+    }
+  },
+  "domain_max_reference_v1p5_baseline": {
+    "note": "kept as auditing reference; NOT a Jeong comparison because Jeong Fig 2 reports the cell-6 cathode-adjacent HP, not the domain max",
+    "HP_T_max_all_cells_K": 1691.18,
+    "HP_T_peak_over_all_t_K": 1729.34,
+    "electrolyte_T_min_all_cells_K": 323.38,
+    "physical_explanation": "domain max is the end-region HP pellet sandwiched in 1.8 mm mica (k=0.4 W/m/K); mica penetration in 0.42s = 0.30 mm, effectively adiabatic; 86% of adiabatic bound"
+  },
+  "adiabatic_bound": {
+    "delta_T_ad_K": 1673,
+    "T_ad_K": 1973,
+    "formula": "q_pyro * tau / (rho_HP * cp_HP) = 9.7957e9 * 0.42 / (3299.28 * 745.3)"
+  },
+  "verdict_summary": "PASS on all three quantities: HP peak (cell-6 basis) -75 K vs Jeong (5.7% below); HP-electrolyte gap -70 K vs Jeong (7.8% below); adiabatic fractions match to 4 pp. v1.5 mechanism-OPEN status retracted."
+}
