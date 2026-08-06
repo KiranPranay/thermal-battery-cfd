@@ -10,7 +10,6 @@ license: Apache-2.0
 authors:
   - family-names: Kiran
     given-names: "P. Pranay"
-    orcid: "[ORCID TBD]"
     email: "pranaybannu12@gmail.com"
     affiliation: "[AFFILIATION TBD]"
 keywords:
@@ -38,7 +37,6 @@ preferred-citation:
   authors:
     - family-names: Kiran
       given-names: "P. Pranay"
-      orcid: "[ORCID TBD]"
   journal: "Journal of Power Sources"
   year: 2026
   doi: "[DOI TBD upon acceptance]"

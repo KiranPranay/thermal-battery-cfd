@@ -1,13 +1,12 @@
 {
   "title": "Thermal-battery CFD: an OpenFOAM conjugate heat-transfer model of a 13-stack LiSi/FeS2 thermal battery",
   "upload_type": "software",
-  "license": "Apache-2.0",
+  "license": "apache-2.0",
   "access_right": "open",
   "description": "OpenFOAM v2412 chtMultiRegionFoam axisymmetric conjugate heat-transfer model of a 13-stack LiSi/FeS2 thermal battery with LiF-LiCl-LiBr molten-salt electrolyte. Reproduces the reference cell of Jeong, Cho and Lee (2019, J. Power Sources 424:35-41) at +26.85 degC and extends the model to five ambient temperatures {-40, -20, 0, +26.85, +50} degC for operability envelope, discharge derating, and cold-ambient rescue-pellet energy-split accounting. Includes YAML case configurations, the twelve-configuration parameter matrix, build and extraction scripts, per-region extractions cited in the associated publication, and figure-generation code.",
   "creators": [
     {
-      "name": "Kiran, P. Pranay",
-      "orcid": "[ORCID TBD]"
+      "name": "Kiran, P. Pranay"
     }
   ],
   "keywords": [
