@@ -18,7 +18,9 @@ Human-readable summary: https://creativecommons.org/licenses/by/4.0/
 
 Suggested attribution:
   Kiran, P. Pranay. "Thermal-battery CFD: an OpenFOAM conjugate heat-transfer
-  model of a 13-stack LiSi/FeS2 thermal battery." Zenodo, [DOI TBD].
+  model of a 13-stack LiSi/FeS2 thermal battery." Zenodo. The Zenodo concept
+  DOI for this software is listed in CITATION.cff (identifiers[0].value) at
+  each release and always resolves to the current version.
 
 Copyright 2026 P. Pranay Kiran.
 

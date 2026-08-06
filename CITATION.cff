@@ -11,7 +11,8 @@ authors:
   - family-names: Kiran
     given-names: "P. Pranay"
     email: "pranaybannu12@gmail.com"
-    affiliation: "[AFFILIATION TBD]"
+    orcid: "https://orcid.org/0009-0001-2450-6693"
+    affiliation: "Department of Aerospace Engineering, Malla Reddy College of Engineering and Technology, Hyderabad 500100, Telangana, India"
 keywords:
   - openfoam
   - cfd
@@ -37,13 +38,17 @@ preferred-citation:
   authors:
     - family-names: Kiran
       given-names: "P. Pranay"
+      orcid: "https://orcid.org/0009-0001-2450-6693"
+      affiliation: "Department of Aerospace Engineering, Malla Reddy College of Engineering and Technology, Hyderabad 500100, Telangana, India"
   journal: "Journal of Power Sources"
   year: 2026
-  doi: "[DOI TBD upon acceptance]"
   notes: >-
-    Manuscript in preparation for submission; publication metadata to be
-    completed at acceptance.
-identifiers:
-  - description: "Concept DOI for all versions of this software (Zenodo)"
-    type: doi
-    value: "[DOI TBD]"
+    Manuscript in preparation for submission. The DOI field is intentionally
+    omitted from this v1.0.0 release because CFF's schema rejects
+    non-DOI-pattern values; it will be added in a v1.0.1 metadata update
+    once the article DOI is issued upon acceptance.
+
+# The Zenodo concept DOI for this software will be added as an
+# `identifiers:` entry in a v1.0.1 metadata update immediately after
+# the DOI is minted. CFF's schema requires the identifier value to
+# match the DOI pattern, so a placeholder cannot be used here.
