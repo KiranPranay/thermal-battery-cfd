@@ -43,12 +43,13 @@ preferred-citation:
   journal: "Journal of Power Sources"
   year: 2026
   notes: >-
-    Manuscript in preparation for submission. The DOI field is intentionally
-    omitted from this v1.0.0 release because CFF's schema rejects
-    non-DOI-pattern values; it will be added in a v1.0.1 metadata update
-    once the article DOI is issued upon acceptance.
-
-# The Zenodo concept DOI for this software will be added as an
-# `identifiers:` entry in a v1.0.1 metadata update immediately after
-# the DOI is minted. CFF's schema requires the identifier value to
-# match the DOI pattern, so a placeholder cannot be used here.
+    Manuscript in preparation for submission; the article DOI will be added
+    to this preferred-citation.doi field in a follow-up metadata update
+    upon JPS acceptance.
+identifiers:
+  - description: "Concept DOI (Zenodo). Resolves to the latest version of this software."
+    type: doi
+    value: "10.5281/zenodo.21817743"
+  - description: "Version DOI (Zenodo) for v1.0.0."
+    type: doi
+    value: "10.5281/zenodo.21817744"
