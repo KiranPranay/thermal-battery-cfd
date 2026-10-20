@@ -10,7 +10,7 @@ license: Apache-2.0
 authors:
   - family-names: Kiran
     given-names: "P. Pranay"
-    email: "pranaybannu12@gmail.com"
+    email: "kiranpranay12@gmail.com"
     orcid: "https://orcid.org/0009-0001-2450-6693"
     affiliation: "Department of Aerospace Engineering, Malla Reddy College of Engineering and Technology, Hyderabad 500100, Telangana, India"
 keywords:
@@ -38,6 +38,7 @@ preferred-citation:
   authors:
     - family-names: Kiran
       given-names: "P. Pranay"
+      email: "kiranpranay12@gmail.com"
       orcid: "https://orcid.org/0009-0001-2450-6693"
       affiliation: "Department of Aerospace Engineering, Malla Reddy College of Engineering and Technology, Hyderabad 500100, Telangana, India"
   journal: "Journal of Power Sources"
